@@ -17,41 +17,6 @@ Open [http://localhost:3000](http://localhost:3000). Enter a name and room code,
 then send the room link to another player. The second player can join from a
 different browser or device on the same reachable server.
 
-### One-command Docker host
-
-If Docker Desktop or Docker Engine is installed, no local Node.js setup is
-needed:
-
-```bash
-docker compose up --build
-```
-
-Open [http://localhost:3000](http://localhost:3000). To let another device on
-your home network join, share `http://YOUR-LAN-IP:3000` and allow port 3000
-through your firewall. Stop the server with `Ctrl+C`, then run
-`docker compose down` to remove the container.
-
-### Build it in GitHub Actions, then host it locally
-
-The **Build local-host image** workflow creates a ready-to-run Docker image:
-
-1. Open the repository's **Actions** tab.
-2. Select **Build local-host image**, choose **Run workflow**, and wait for it
-   to finish.
-3. Download the `rope-pull-arena-…` artifact from the completed workflow and
-   extract `rope-pull-arena.tar.gz`.
-4. Run the downloaded image locally:
-
-   ```bash
-   docker load --input rope-pull-arena.tar.gz
-   docker run --rm --publish 3000:3000 rope-pull-arena:local
-   ```
-
-   Then visit [http://localhost:3000](http://localhost:3000).
-
-The workflow also starts the container and checks its home page before making
-the downloadable artifact, so a broken image will not be published.
-
 ## How a match works
 
 1. Enter a display name and a room code. Leaving the room blank creates one.
@@ -91,8 +56,6 @@ Fly.io, or a VPS, then use its public URL.
 ## Project structure
 
 - `server.js` — static HTTP server, room manager, game rules, and WebSockets.
-- `compose.yaml` — one-command local Docker host.
-- `.github/workflows/local-host-image.yml` — tested, downloadable Docker image build.
 - `public/index.html` — game and lobby interface.
 - `public/styles.css` — responsive arena artwork and animation.
 - `public/game.js` — WebSocket client, state rendering, and interactions.
