@@ -1,61 +1,45 @@
-# Rope Pull Arena
+# Blobbyte
 
-A real-time multiplayer math tug-of-war game. Two players join the same room,
-race to solve each question, and pull the rope toward their team. The first
-player to earn **10 correct answers** wins.
+A touch-first pixel-art arena game: collect glowing orbs, grow your blob, eat
+smaller enemies, and escape anything larger than you.
+
+## Play on GitHub Pages
+
+This repository includes a GitHub Pages deployment workflow. After the changes
+reach the repository's default branch:
+
+1. Open the repository on GitHub.
+2. Select **Settings → Pages**.
+3. Under **Build and deployment**, set **Source** to **GitHub Actions**.
+4. Select the **Actions** tab and wait for **Deploy Blobbyte to GitHub Pages**
+   to finish. You can also open that workflow and select **Run workflow**.
+5. Open the URL shown by the deployment. It normally has this format:
+   `https://YOUR-USERNAME.github.io/YOUR-REPOSITORY/`.
+6. Press **TAP TO PLAY** on the title screen.
+
+> If GitHub Pages is already configured to use GitHub Actions, simply merge or
+> push to the default branch and open the deployment URL from the workflow run.
+
+## Controls
+
+- **Phone or tablet:** press **TAP TO PLAY**, then drag anywhere on the game to
+  move. The lower-left joystick shows your direction.
+- **Desktop:** press **TAP TO PLAY**, then use **WASD**, the **arrow keys**, or
+  click and drag.
+- Collect the small glowing squares to gain mass.
+- You can absorb enemy blobs that are smaller than you. Larger blobs can absorb
+  you, so move away when **DANGER NEARBY** appears.
+- If you are eaten, select **SWIM AGAIN** to restart.
 
 ## Run locally
 
-Requires Node.js 20 or newer.
+The game has no build step or package installation. From the repository folder,
+run:
 
 ```bash
-npm install
-npm start
+python3 -m http.server 4173
 ```
 
-Open [http://localhost:3000](http://localhost:3000). Enter a name and room code,
-then send the room link to another player. The second player can join from a
-different browser or device on the same reachable server.
+Then visit [http://localhost:4173](http://localhost:4173) and press
+**TAP TO PLAY**.
 
-## How a match works
-
-1. Enter a display name and a room code. Leaving the room blank creates one.
-2. Share the URL using the link button in the header.
-3. The first two visitors become the Cobalt and Crimson players. Additional
-   visitors can watch the live match.
-4. Both players receive the same question at the same time.
-5. The first correct answer wins the round and pulls the rope one point.
-6. A wrong answer uses that player's attempt for the round, giving their rival
-   a chance to answer.
-7. The first player to 10 points wins. Either player can start a rematch.
-
-Questions begin with addition and subtraction, then introduce multiplication
-and division as a match becomes more competitive.
-
-## Networking
-
-The Node server hosts the static game and an authoritative WebSocket server on
-the same port. Answers are checked on the server, not trusted from the browser.
-Rooms are held in memory, include spectators, and are removed after everyone
-leaves. WebSocket heartbeat checks remove dead connections, and the browser
-uses capped exponential-backoff reconnection.
-
-Because multiplayer requires a continuously running WebSocket server, this game
-**cannot be hosted on GitHub Pages alone**. GitHub Pages only serves static
-files. Deploy the repository to a Node-compatible host such as Render, Railway,
-Fly.io, or a VPS, then use its public URL.
-
-### Deployment settings
-
-- Build command: `npm install`
-- Start command: `npm start`
-- Health/open port: the server uses the host-provided `PORT` environment
-  variable and falls back to `3000` locally.
-- Persistent storage: not required for the current in-memory room model.
-
-## Project structure
-
-- `server.js` — static HTTP server, room manager, game rules, and WebSockets.
-- `public/index.html` — game and lobby interface.
-- `public/styles.css` — responsive arena artwork and animation.
-- `public/game.js` — WebSocket client, state rendering, and interactions.
