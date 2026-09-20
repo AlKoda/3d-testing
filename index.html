@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="theme-color" content="#071d26" />
+    <title>Blobbyte — Pixel Pond</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Share+Tech+Mono&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="game-shell">
+      <canvas id="game" aria-label="Blobbyte game arena"></canvas>
+
+      <header class="topbar">
+        <div class="brand"><span class="brand-mark">◆</span> BLOBBYTE</div>
+        <div class="zone">PIXEL POND <span>_01</span></div>
+        <button class="sound-button" id="soundButton" aria-label="Toggle sound">♪</button>
+      </header>
+
+      <section class="stats-panel" aria-label="Game stats">
+        <div class="stat-label">SCORE</div>
+        <div class="score" id="score">000240</div>
+        <div class="mass-row"><span>MASS</span><b id="mass">24</b></div>
+        <div class="mass-track"><div id="massFill"></div></div>
+        <div class="level-row"><span>LVL 04</span><span>NEXT: 36</span></div>
+      </section>
+
+      <section class="mission-panel">
+        <div class="mission-heading"><span>●</span> MISSION</div>
+        <p>ABSORB <b id="orbCount">6</b> MORE<br />PIXEL ORBS</p>
+        <div class="mission-progress"><i id="missionFill"></i></div>
+      </section>
+
+      <section class="leaderboard">
+        <h2>TOP BLOBS</h2>
+        <ol id="leaderboard"></ol>
+      </section>
+
+      <div class="danger" id="danger"><span>!</span> DANGER NEARBY</div>
+
+      <div class="joystick" id="joystick" aria-label="Touch movement control">
+        <div class="joystick-arrows"><span>▲</span><span>◀</span><span>▶</span><span>▼</span></div>
+        <div class="joystick-knob" id="joystickKnob"><i></i></div>
+      </div>
+
+      <div class="tip" id="tip">DRAG TO MOVE <span>✦</span> EAT SMALLER BLOBS <span>✦</span> AVOID THE BIG ONES</div>
+
+      <section class="start-screen" id="startScreen">
+        <div class="start-card">
+          <div class="mini-blob"><i></i><i></i></div>
+          <h1>BLOBBYTE</h1>
+          <p>GROW. GLOW. SURVIVE.</p>
+          <button id="playButton">TAP TO PLAY</button>
+          <small>DRAG ANYWHERE TO SWIM</small>
+        </div>
+      </section>
+
+      <section class="game-over" id="gameOver">
+        <div class="start-card">
+          <div class="skull">×﹏×</div>
+          <h1>DEVOURED!</h1>
+          <p>FINAL SCORE <b id="finalScore">0</b></p>
+          <button id="restartButton">SWIM AGAIN</button>
+        </div>
+      </section>
+    </main>
+    <script src="game.js"></script>
+  </body>
+</html>
