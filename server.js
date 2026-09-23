@@ -3,7 +3,8 @@ const fs = require('fs');
 const path = require('path');
 const { WebSocketServer, WebSocket } = require('ws');
 
-const PORT = process.env.PORT || 3000;
+const parsedPort = Number.parseInt(process.env.PORT || '3000', 10);
+const PORT = Number.isInteger(parsedPort) && parsedPort >= 0 && parsedPort <= 65535 ? parsedPort : 3000;
 const PUBLIC_DIR = path.join(__dirname, 'public');
 const WIN_SCORE = 10;
 const rooms = new Map();
@@ -16,10 +17,29 @@ const mimeTypes = {
 };
 
 const server = http.createServer((request, response) => {
-  const requested = request.url.split('?')[0] === '/' ? '/index.html' : request.url.split('?')[0];
-  const filePath = path.normalize(path.join(PUBLIC_DIR, requested));
+  let requested;
+  try {
+    requested = decodeURIComponent(new URL(request.url, 'http://localhost').pathname);
+  } catch {
+    response.writeHead(400).end('Bad request');
+    return;
+  }
 
-  if (!filePath.startsWith(PUBLIC_DIR)) {
+  if (requested === '/healthz') {
+    response.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });
+    response.end(JSON.stringify({ status: 'ok' }));
+    return;
+  }
+
+  if (request.method !== 'GET' && request.method !== 'HEAD') {
+    response.writeHead(405, { Allow: 'GET, HEAD' }).end('Method not allowed');
+    return;
+  }
+
+  requested = requested === '/' ? 'index.html' : requested.replace(/^\/+/, '');
+  const filePath = path.resolve(PUBLIC_DIR, requested);
+
+  if (filePath !== PUBLIC_DIR && !filePath.startsWith(`${PUBLIC_DIR}${path.sep}`)) {
     response.writeHead(403).end('Forbidden');
     return;
   }
@@ -30,7 +50,7 @@ const server = http.createServer((request, response) => {
       return;
     }
     response.writeHead(200, { 'Content-Type': mimeTypes[path.extname(filePath)] || 'application/octet-stream' });
-    response.end(data);
+    response.end(request.method === 'HEAD' ? undefined : data);
   });
 });
 
@@ -228,7 +248,26 @@ wss.on('connection', socket => {
   });
 });
 
-setInterval(() => {
+server.on('error', error => {
+  console.error(`Unable to start Rope Pull Arena: ${error.message}`);
+  process.exitCode = 1;
+});
+
+server.listen(PORT, '0.0.0.0', () => console.log(`Rope Pull Arena is running on port ${server.address().port}`));
+
+function shutdown() {
+  clearInterval(heartbeat);
+  rooms.forEach(room => clearTimeout(room.nextTimer));
+  wss.clients.forEach(socket => socket.close(1001, 'Server shutting down'));
+  server.close(error => {
+    if (error) {
+      console.error(`Error while shutting down: ${error.message}`);
+      process.exitCode = 1;
+    }
+  });
+}
+
+const heartbeat = setInterval(() => {
   wss.clients.forEach(socket => {
     if (!socket.isAlive) return socket.terminate();
     socket.isAlive = false;
@@ -236,4 +275,5 @@ setInterval(() => {
   });
 }, 30000);
 
-server.listen(PORT, () => console.log(`Rope Pull Arena is running at http://localhost:${PORT}`));
+process.once('SIGTERM', shutdown);
+process.once('SIGINT', shutdown);

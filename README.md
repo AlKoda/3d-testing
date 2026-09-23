@@ -47,10 +47,11 @@ Fly.io, or a VPS, then use its public URL.
 
 ### Deployment settings
 
-- Build command: `npm install`
+- Build command: `npm ci`
 - Start command: `npm start`
-- Health/open port: the server uses the host-provided `PORT` environment
-  variable and falls back to `3000` locally.
+- Health check: `/healthz`
+- Open port: the server binds to all interfaces, uses the host-provided `PORT`
+  environment variable, and falls back to `3000` locally.
 - Persistent storage: not required for the current in-memory room model.
 
 ## Project structure
