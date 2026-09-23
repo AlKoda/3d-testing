@@ -5,7 +5,8 @@
   "description": "Real-time multiplayer math tug-of-war game",
   "scripts": {
     "start": "node server.js",
-    "check": "node --check server.js && node --check public/game.js"
+    "check": "node --check server.js && node --check public/game.js && node --check test/smoke-test.js",
+    "test": "node --test test/smoke-test.js"
   },
   "engines": {
     "node": ">=20"

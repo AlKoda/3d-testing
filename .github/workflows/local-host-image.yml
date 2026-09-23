@@ -15,6 +15,18 @@ jobs:
       - name: Check out the game
         uses: actions/checkout@v4
 
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install and test
+        run: |
+          npm ci
+          npm run check
+          npm test
+
       - name: Build the local-host image
         run: docker build --tag rope-pull-arena:local .
 
@@ -23,7 +35,7 @@ jobs:
           docker run --detach --name rope-pull-test --publish 3000:3000 rope-pull-arena:local
           trap 'docker logs rope-pull-test; docker rm --force rope-pull-test' EXIT
           for attempt in {1..20}; do
-            if curl --fail --silent --show-error http://127.0.0.1:3000/ > /dev/null; then
+            if curl --fail --silent --show-error http://127.0.0.1:3000/healthz > /dev/null; then
               exit 0
             fi
             sleep 1
